@@ -28,7 +28,8 @@ GameObject.prototype.draw = function(camera,lightSource){
   Material.modelViewProjMatrix.set(this.modelMatrix).mul(camera.viewProjMatrix);
   Material.modelMatrix.set(this.modelMatrix);
   Material.modelMatrixInverse.set(this.modelMatrix).invert();
-  Material.lightPos.set(lightSource);
+  Material.lightPos.set(lightSource.lightPos);
+  Material.powerDensity.set(lightSource.powerDensity);
   //this.mesh.setUniform("lightPos",lightSource);
   // this.mesh.material.modelViewProjMatrix.set().
   // 	mul(this.modelMatrix).

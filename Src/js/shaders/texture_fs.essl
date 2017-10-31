@@ -3,7 +3,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	varying vec2 texCoord;
 	uniform sampler2D colorTexture; 
 	uniform vec4 lightPos[1]; // xyz is the direction, w is 0
-	uniform vec4 lightPowerDensity[1]; // w ignored
+	uniform vec4 powerDensity[1]; // w ignored
 
 	varying vec4 worldPos;
 	varying vec3 worldNormal;
@@ -11,6 +11,6 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	void main(void) {
 		float cosTheta = dot(normalize(lightPos[0].xyz), normalize(worldNormal));
 
-		gl_FragColor = vec4(texture2D(colorTexture, texCoord).rgb * cosTheta,1);
+		gl_FragColor = powerDensity[0] * vec4(texture2D(colorTexture, texCoord).rgb * cosTheta,1);
 	}
 `;

@@ -25,6 +25,8 @@ Object.defineProperty(Material,
  "modelMatrixInverse", {value: new Mat4()} );
 Object.defineProperty(Material,
  "lightPos", {value: new Vec4Array()} );
+Object.defineProperty(Material,
+ "powerDensity", {value: new Vec4Array()} );
 
 
 Material.prototype.commit = function() { 
