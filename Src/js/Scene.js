@@ -7,19 +7,20 @@ let Scene = function(gl) {
 
   this.TexturedQuadGeometry = new TexturedQuadGeometry(gl);
 
-  this.subTexture1 = new Texture2D(gl, 'json/chevy/chevy.png');
+  this.carTexture = new Texture2D(gl, 'json/chevy/chevy.png');
   //this.subTexture2 = new Texture2D(gl, 'slowpoke/YadonEyeDh.png');
-  this.subMaterial1 = new Material(gl,this.textureProgram);
-  this.subMaterial1.colorTexture.set(this.subTexture1.glTexture);
+  this.carMaterial = new Material(gl,this.textureProgram);
+  this.carMaterial.colorTexture.set(this.carTexture.glTexture);
   //this.subMaterial2.colorTexture.set(this.subTexture2.glTexture);
   
   //this.subMaterial2 = new Material(gl,this.textureProgram); 
-  this.multiMesh = new MultiMesh(gl,"json/chevy/chassis.json",[this.subMaterial1]);
+  this.multiMesh = new MultiMesh(gl,"json/chevy/chassis.json",[this.carMaterial]);
   this.multiMeshObject = new GameObject(this.multiMesh);
 
   this.camera = new PerspectiveCamera();
-  this.lightSource = [];
-
+  this.lightSource = new Vec4Array(1);
+  this.lightSource.at(0).set(1,1,1,0);
+  //this.lightSource.at(1).set(0.6,0.6,0.6,0.6);
 };
 
 

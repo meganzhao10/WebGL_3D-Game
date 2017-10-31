@@ -2,19 +2,15 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	precision highp float;
 	varying vec2 texCoord;
 	uniform sampler2D colorTexture; 
-	uniform vec4 lightPos[1];
-	uniform vec4 lightPowerDensity[1];
+	uniform vec4 lightPos[1]; // xyz is the direction, w is 0
+	uniform vec4 lightPowerDensity[1]; // w ignored
 
 	varying vec4 worldPos;
 	varying vec3 worldNormal;
 
 	void main(void) {
-		vec3 lightDirection = vec3(0.3,0.3,0.3);
-		vec3 normal = normalize(worldNormal);
-		gl_FragColor = vec4(abs(normal),1);
-		gl_FragColor = texture2D(colorTexture, texCoord);
-		float light = dot(normal, lightDirection);
-		gl_FragColor.rgb *= light;
+		float cosTheta = dot(normalize(lightPos[0].xyz), normalize(worldNormal));
 
+		gl_FragColor = vec4(texture2D(colorTexture, texCoord).rgb * cosTheta,1);
 	}
 `;
