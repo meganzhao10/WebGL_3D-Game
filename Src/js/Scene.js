@@ -7,19 +7,14 @@ let Scene = function(gl) {
 
   this.TexturedQuadGeometry = new TexturedQuadGeometry(gl);
 
-  // this.textureMaterial = new Material(gl, this.textureProgram);
-  // this.newTexture = new Texture2D(gl, 'asteroid.png');
-  // this.textureMaterial.colorTexture.set(this.newTexture.glTexture);
-  // this.textureMesh = new Mesh(this.TexturedQuadGeometry,this.textureMaterial);
-  // this.textureObject = new GameObject(this.textureMesh);
-
-  // this.subTexture1 = new Texture2D(gl, 'slowpoke/YadonDh.png');
-  // this.subTexture2 = new Texture2D(gl, 'slowpoke/YadonEyeDh.png');
-  // this.subMaterial1.colorTexture.set(this.subTexture1.glTexture);
-  // this.subMaterial2.colorTexture.set(this.subTexture2.glTexture);
+  this.subTexture1 = new Texture2D(gl, 'json/chevy/chevy.png');
+  //this.subTexture2 = new Texture2D(gl, 'slowpoke/YadonEyeDh.png');
   this.subMaterial1 = new Material(gl,this.textureProgram);
-  this.subMaterial2 = new Material(gl,this.textureProgram); 
-  this.multiMesh = new MultiMesh(gl,"json/chevy/chassis.json",[this.subMaterial1,this.subMaterial2]);
+  this.subMaterial1.colorTexture.set(this.subTexture1.glTexture);
+  //this.subMaterial2.colorTexture.set(this.subTexture2.glTexture);
+  
+  //this.subMaterial2 = new Material(gl,this.textureProgram); 
+  this.multiMesh = new MultiMesh(gl,"json/chevy/chassis.json",[this.subMaterial1]);
   this.multiMeshObject = new GameObject(this.multiMesh);
 
   this.camera = new PerspectiveCamera();
@@ -42,7 +37,7 @@ Scene.prototype.update = function(gl, keysPressed) {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   this.multiMeshObject.draw(this.camera, this.lightSource);
-  this.multiMeshObject.scale.set(0.01,0.01,0.01);
+  this.multiMeshObject.scale.set(0.005,0.005,0.005);
   this.multiMeshObject.orientation = 1.5;
 
 

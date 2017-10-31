@@ -12,7 +12,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		vec3 lightDirection = vec3(0.3,0.3,0.3);
 		vec3 normal = normalize(worldNormal);
 		gl_FragColor = vec4(abs(normal),1);
-		//gl_FragColor = texture2D(colorTexture, texCoord);
+		gl_FragColor = texture2D(colorTexture, texCoord);
 		float light = dot(normal, lightDirection);
 		gl_FragColor.rgb *= light;
 
