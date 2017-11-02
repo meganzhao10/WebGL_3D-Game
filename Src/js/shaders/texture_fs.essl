@@ -11,6 +11,14 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	void main(void) {
 		float cosTheta = dot(normalize(lightPos[0].xyz), normalize(worldNormal));
 
+		//add for loop to add up all the light together
 		gl_FragColor = powerDensity[0] * vec4(texture2D(colorTexture, texCoord).rgb * cosTheta,1);
+
+		//mmm = normalize(lightPos.xyz - worldPos.xyz * lightPos.w)
+		//for directional
+		//vec3 M = powerDensity.rgb
+		//for point
+		//distance between lightPs and worldPos and square; powerDensity.rgb / dot(x,x)
+		//x,x is the mmm without normalize
 	}
 `;
