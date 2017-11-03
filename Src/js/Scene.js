@@ -83,18 +83,9 @@ Scene.prototype.update = function(gl, keysPressed) {
   gl.enable(gl.DEPTH_TEST);
   gl.clearDepth(1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-
-
-  for (var i = 0; i < this.gameObjects.length; i++){
-      this.gameObjects[i].draw(this.camera, this.lightSource);
-      if(this.gameObjects[i].parent == null){
-        this.gameObjects[i].scale.set(0.005,0.005,0.005);
-      }
-  }
-  this.rotation += 0.01;
+  this.rotation += 0.03;
   this.mainrotorObject.orientation = this.rotation;
-  //this.mainrotorObject.orientation = new Vec4(this.rotation,0,0,0);
+  this.mainrotorObject.rotateAxis.set(0, 1, 0);
 
   if(keysPressed.LEFT) { 
     this.heli1Object.position.add(-speed * dt,0,0); 
@@ -114,6 +105,14 @@ Scene.prototype.update = function(gl, keysPressed) {
   if(keysPressed.K) { 
     this.carObject.position.add(0,0,speed * dt); 
   } 
+
+  for (var i = 0; i < this.gameObjects.length; i++){
+      
+      if(this.gameObjects[i].parent == null){
+        this.gameObjects[i].scale.set(0.005,0.005,0.005);
+      }
+      this.gameObjects[i].draw(this.camera, this.lightSource);
+  }
 
 }
 

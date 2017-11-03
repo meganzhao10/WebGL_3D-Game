@@ -4,6 +4,7 @@ let GameObject = function(mesh) {
   this.parent = null;
   this.position = new Vec3(0, 0, 0); 
   this.orientation = 0;
+  this.rotateAxis = new Vec3(0,0,0);
   this.scale = new Vec3(0.45, 0.45, 1); 
   this.angularVelocity = 0;
   this.modelMatrix = new Mat4(); 
@@ -16,7 +17,9 @@ GameObject.prototype.updateModelMatrix = function(){
   this.modelMatrix.set().
     scale(this.scale).
     translate(0,0,0).
-    rotate(this.orientation).
+    rotate(this.angularVelocity).
+    //rotate(Vec4(0.8,Vec3(1,0,1))).
+    rotate(this.orientation,this.rotateAxis).
     translate(this.position);
 
 };
