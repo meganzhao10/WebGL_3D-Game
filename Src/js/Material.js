@@ -24,11 +24,10 @@ Object.defineProperty(Material,
 Object.defineProperty(Material,
  "modelMatrixInverse", {value: new Mat4()} );
 Object.defineProperty(Material,
- "spotLightDirection", {value: new Vec3()} );
-Object.defineProperty(Material,
  "cameraPosition", {value: new Vec3()} );
 Material.lightPos = new Vec4Array();
-Material.powerDensity = new Vec4Array();
+Material.lightPowerDensity = new Vec4Array();
+Material.mainDir = new Vec4Array();
 
 
 Material.prototype.commit = function() { 

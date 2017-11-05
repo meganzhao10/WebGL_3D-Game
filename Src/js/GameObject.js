@@ -47,11 +47,10 @@ GameObject.prototype.draw = function(camera,lightSource){
   	Material.modelViewProjMatrix.mul(this.parent.modelMatrix);
   }
   Material.modelViewProjMatrix.mul(camera.viewProjMatrix);
-
-  Material.spotLightDirection.set(lightSource.spotLightDirection);
-    Material.powerDensity = lightSource.powerDensity;
-  Material.lightPos = lightSource.lightPos;
   Material.cameraPosition.set(camera.position);
+  Material.lightPowerDensity = lightSource.lightPowerDensity;
+  Material.mainDir = lightSource.mainDir;
+  Material.lightPos = lightSource.lightPos;
   this.mesh.draw(); 
 };
 

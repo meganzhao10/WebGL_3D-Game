@@ -77,13 +77,12 @@ let Scene = function(gl) {
 
 
   this.lightSource = new LightSource();
-  this.lightSource.lightPos = new Vec4Array(2);
+  this.lightSource.lightPos = new Vec4Array(1);
   this.lightSource.lightPos.at(0).set(0,0,1,0); // the last 0 indicates that it's a directional light
-  this.lightSource.lightPos.at(1).set(this.carObject.position,1);//car spot light source
-  this.lightSource.powerDensity = new Vec4Array(1);
-  this.lightSource.powerDensity.at(0).set(1,1,1,1);  
-  this.lightSource.spotLightDirection = new Vec3();
-  this.lightSource.spotLightDirection.set(0,0,1);
+  this.lightSource.lightPowerDensity = new Vec4Array(1);
+  this.lightSource.lightPowerDensity.at(0).set(1,1,1,1); 
+  this.lightSource.mainDir = new Vec4Array(1);
+  this.lightSource.mainDir.at(0).set(this.carObject.position,1); 
   //powerDensity for directional light between 0 and 1
   //powerDensity for point light (10, 100, 1000,1), if white surface with this source, would be mostly blue, things that are close to it will be green, things really close will be white
   
