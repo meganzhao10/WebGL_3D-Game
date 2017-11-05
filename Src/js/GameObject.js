@@ -10,6 +10,18 @@ let GameObject = function(mesh) {
   this.modelMatrix = new Mat4(); 
 };
 
+// GameObject.prototype.drawShadow = function(Vec3 lightDir){
+//   this.updateModelMatrix();
+//   Material.modelMatrix.set(this.modelMatrix);
+//   Material.modelMatrixInverse.set(this.modelMatrix).invert();
+//   Material.modelViewProjMatrix.set(this.modelMatrix);
+//   if (this.parent != null){
+//     Material.modelViewProjMatrix.mul(this.parent.modelMatrix);
+//   }
+
+  
+
+// };
 
 GameObject.prototype.updateModelMatrix = function(){ 
 // TODO: set the model matrix according to the 
@@ -27,15 +39,14 @@ GameObject.prototype.draw = function(camera,lightSource){
   this.updateModelMatrix();
 // TODO: Set the uniform modelViewProjMatrix (reflected in the material) to modelMatrix multiplied by the camera’s viewProjMatrix. Use Mat4 methods set() and/or mul().
   //this.mesh.setUniform("modelViewProjMatrix",this.modelMatrix.mul(camera.viewProjMatrix));
+  Material.modelMatrix.set(this.modelMatrix);
+  Material.modelMatrixInverse.set(this.modelMatrix).invert();
 
   Material.modelViewProjMatrix.set(this.modelMatrix);
   if (this.parent != null){
   	Material.modelViewProjMatrix.mul(this.parent.modelMatrix);
   }
   Material.modelViewProjMatrix.mul(camera.viewProjMatrix);
-
-  Material.modelMatrix.set(this.modelMatrix);
-  Material.modelMatrixInverse.set(this.modelMatrix).invert();
 
   Material.spotLightDirection.set(lightSource.spotLightDirection);
     Material.powerDensity = lightSource.powerDensity;
