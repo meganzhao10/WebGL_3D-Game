@@ -2,8 +2,9 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	precision highp float;
 	varying vec2 texCoord;
 	uniform sampler2D colorTexture; 
-	uniform vec4 lightPos[1]; // xyz is the direction, w is 0
+	uniform vec4 lightPos[2]; // xyz is the direction, w is 0
 	uniform vec4 powerDensity[1]; // w ignored
+	uniform vec3 spotLightDirection;
 
 	varying vec4 worldPos;
 	varying vec3 worldNormal;
@@ -17,11 +18,16 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		vec3 directionToCamera = normalize(cameraPosition - worldPos.xyz);
 		vec3 halfwayVector = normalize(directionToCamera + lightPos[0].xyz);
 
-		float specularShininess = 0.005;
+		float specularShininess = 0.1;
 		float specularBrightness = (pow(max(0.0, dot(worldNormal,halfwayVector)),specularShininess));
 		vec4 specularLight = vec4(texture2D(colorTexture, texCoord).rgb * specularBrightness,1);
 
-		gl_FragColor = diffuseLight + specularLight;
+		vec3 lightToSurfaceDistance = lightPos[1].xyz - worldPos.xyz * lightPos[1].w;
+		float spotCos = dot(spotLightDirection, lightToSurfaceDistance);
+		float spotPowerDensity = pow(spotCos, 0.1);
+		vec4 spotLight = vec4(texture2D(colorTexture, texCoord).rgb * spotPowerDensity,1);
+
+		gl_FragColor = diffuseLight + specularLight + spotLight;
 
 
 		//add for loop to add up all the light together

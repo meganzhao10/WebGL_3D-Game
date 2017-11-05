@@ -27,6 +27,9 @@ Object.defineProperty(Material,
  "lightPos", {value: new Vec4Array()} );
 Object.defineProperty(Material,
  "powerDensity", {value: new Vec4Array()} );
+Object.defineProperty(Material,
+ "spotLightDirection", {value: new Vec3()} );
+
 
 
 Material.prototype.commit = function() { 
