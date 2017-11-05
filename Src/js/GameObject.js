@@ -18,7 +18,6 @@ GameObject.prototype.updateModelMatrix = function(){
     scale(this.scale).
     translate(0,0,0).
     rotate(this.angularVelocity).
-    //rotate(Vec4(0.8,Vec3(1,0,1))).
     rotate(this.orientation,this.rotateAxis).
     translate(this.position);
 
@@ -37,8 +36,8 @@ GameObject.prototype.draw = function(camera,lightSource){
 
   Material.modelMatrix.set(this.modelMatrix);
   Material.modelMatrixInverse.set(this.modelMatrix).invert();
-  Material.lightPos.set(lightSource.lightPos);
   Material.powerDensity.set(lightSource.powerDensity);
+  Material.lightPos.set(lightSource.lightPos);
   Material.spotLightDirection.set(lightSource.spotLightDirection);
   this.mesh.draw(); 
 };

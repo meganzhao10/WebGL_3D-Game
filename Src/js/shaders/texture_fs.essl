@@ -12,7 +12,9 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	void main(void) {
 		
 		float cosTheta = dot(normalize(lightPos[0].xyz), normalize(worldNormal));
-		vec4 diffuseLight = powerDensity[0] * vec4(texture2D(colorTexture, texCoord).rgb * cosTheta,1);
+		vec3 distance = lightPos[0].xyz - worldPos.xyz * lightPos[0].w;
+		vec4 diffuseLight = vec4(powerDensity[0].rgb / dot(distance, distance) * 
+			texture2D(colorTexture, texCoord).rgb * cosTheta,1);
 
 		vec3 cameraPosition = vec3(1,1,1);	
 		vec3 directionToCamera = normalize(cameraPosition - worldPos.xyz);
