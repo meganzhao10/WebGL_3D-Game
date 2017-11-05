@@ -9,11 +9,22 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	varying vec3 worldNormal;
 
 	void main(void) {
+		
 		float cosTheta = dot(normalize(lightPos[0].xyz), normalize(worldNormal));
+		vec4 diffuseLight = powerDensity[0] * vec4(texture2D(colorTexture, texCoord).rgb * cosTheta,1);
+
+		vec3 cameraPosition = vec3(1,1,1);	
+		vec3 directionToCamera = normalize(cameraPosition - worldPos.xyz);
+		vec3 halfwayVector = normalize(directionToCamera + lightPos[0].xyz);
+
+		float specularShininess = 0.005;
+		float specularBrightness = (pow(max(0.0, dot(worldNormal,halfwayVector)),specularShininess));
+		vec4 specularLight = vec4(texture2D(colorTexture, texCoord).rgb * specularBrightness,1);
+
+		gl_FragColor = diffuseLight + specularLight;
+
 
 		//add for loop to add up all the light together
-		gl_FragColor = powerDensity[0] * vec4(texture2D(colorTexture, texCoord).rgb * cosTheta,1);
-
 		//mmm = normalize(lightPos.xyz - worldPos.xyz * lightPos.w)
 		//for directional
 		//vec3 M = powerDensity.rgb

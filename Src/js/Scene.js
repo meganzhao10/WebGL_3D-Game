@@ -3,9 +3,18 @@ let Scene = function(gl) {
   this.texturevsIdle = new Shader(gl, gl.VERTEX_SHADER, "texture_idle_vs.essl");
   this.texturefsSolid = new Shader(gl, gl.FRAGMENT_SHADER, "texture_fs.essl");
   this.textureProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsSolid);
-  //this.TexturedQuadGeometry = new TexturedQuadGeometry(gl);
 
   this.gameObjects = [];
+
+  //ground object
+  this.TexturedQuadGeometry = new TexturedQuadGeometry(gl);
+  this.quadMaterial = new Material(gl, this.textureProgram);
+  this.quadTexture = new Texture2D(gl, 'json/tree.png');
+  this.quadMaterial.colorTexture.set(this.quadTexture.glTexture);
+  this.quadMesh = new Mesh(this.TexturedQuadGeometry,this.quadMaterial); 
+  this.quadObject = new GameObject(this.quadMesh);
+  this.gameObjects.push(this.quadObject);
+  
   //car object
   this.carMaterial = new Material(gl,this.textureProgram);
   this.carTexture = new Texture2D(gl, 'json/chevy/chevy.png');
@@ -14,6 +23,8 @@ let Scene = function(gl) {
   this.carObject = new GameObject(this.carMesh);
   this.carObject.position.set(0,0,-0.5);
   this.gameObjects.push(this.carObject);
+
+
 
   //car wheels
   this.wheelMesh = new MultiMesh(gl,"json/chevy/wheel.json",[this.carMaterial])
@@ -55,6 +66,14 @@ let Scene = function(gl) {
   this.mainrotorObject.parent = this.heli1Object;
   this.mainrotorObject.position.set(0.5,15,0);
   this.gameObjects.push(this.mainrotorObject);
+
+  // this.alrscrewMesh = new MultiMesh(gl,"json/thunderbolt_airscrew.json",[this.heli1Material]);
+  // this.alrscrewObject = new GameObject(this.alrscrewMesh);
+  // this.gameObjects.push(this.alrscrewObject);
+
+  // this.smoothTreeMesh = new MultiMesh(gl,"json/smoothTree.json",[]);
+  // this.smoothTreeObject = new GameObject(this.smoothTreeMesh);
+  // this.gameObjects.push(this.smoothTreeObject);
 
 
   this.lightSource = new LightSource();
