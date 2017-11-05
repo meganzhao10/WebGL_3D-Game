@@ -5,10 +5,10 @@ let TexturedQuadGeometry = function(gl) {
   gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer); 
   gl.bufferData(gl.ARRAY_BUFFER, 
     new Float32Array([ 
-        0, 0, 0, 1,
-        -1, 0, -1, 0,
-         -1, 0, 1, 0,
-         1, 0, -1, 0,
+        -3000, -10, -3000, 1,
+        -3000, -10, 3000, 0,
+         3000, -10, -3000, 0,
+         3000, -10, 3000, 0,
     ]), 
     gl.STATIC_DRAW); 
 
@@ -39,7 +39,7 @@ let TexturedQuadGeometry = function(gl) {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, 
     new Uint16Array([ 
       0, 1, 2, 
-      0, 2, 3, 
+      1, 2, 3, 
     ]), 
     gl.STATIC_DRAW); 
   

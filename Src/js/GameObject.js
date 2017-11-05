@@ -40,6 +40,7 @@ GameObject.prototype.draw = function(camera,lightSource){
   Material.spotLightDirection.set(lightSource.spotLightDirection);
     Material.powerDensity = lightSource.powerDensity;
   Material.lightPos = lightSource.lightPos;
+  Material.cameraPosition.set(camera.position);
   this.mesh.draw(); 
 };
 

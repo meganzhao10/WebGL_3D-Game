@@ -5,6 +5,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	uniform vec4 lightPos[2]; // xyz is the direction, w is 0
 	uniform vec4 powerDensity[1]; // w ignored
 	uniform vec3 spotLightDirection;
+	uniform vec3 cameraPosition;
 
 	varying vec4 worldPos;
 	varying vec3 worldNormal;
@@ -16,7 +17,6 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		vec4 diffuseLight = vec4(powerDensity[0].rgb / dot(distance, distance) * 
 			texture2D(colorTexture, texCoord).rgb * cosTheta,1);
 
-		vec3 cameraPosition = vec3(1,1,1);	
 		vec3 directionToCamera = normalize(cameraPosition - worldPos.xyz);
 		vec3 halfwayVector = normalize(directionToCamera + lightPos[0].xyz);
 

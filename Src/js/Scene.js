@@ -9,7 +9,7 @@ let Scene = function(gl) {
   //ground object
   this.TexturedQuadGeometry = new TexturedQuadGeometry(gl);
   this.quadMaterial = new Material(gl, this.textureProgram);
-  this.quadTexture = new Texture2D(gl, 'json/tree.png');
+  this.quadTexture = new Texture2D(gl, 'json/ground.png');
   this.quadMaterial.colorTexture.set(this.quadTexture.glTexture);
   this.quadMesh = new Mesh(this.TexturedQuadGeometry,this.quadMaterial); 
   this.quadObject = new GameObject(this.quadMesh);
@@ -131,7 +131,7 @@ Scene.prototype.update = function(gl, keysPressed) {
   for (var i = 0; i < this.gameObjects.length; i++){
       
       if(this.gameObjects[i].parent == null){
-        this.gameObjects[i].scale.set(0.005,0.005,0.005);
+        this.gameObjects[i].scale.set(0.01,0.01,0.01);
       }
       this.gameObjects[i].draw(this.camera, this.lightSource);
   }
