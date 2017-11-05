@@ -36,9 +36,10 @@ GameObject.prototype.draw = function(camera,lightSource){
 
   Material.modelMatrix.set(this.modelMatrix);
   Material.modelMatrixInverse.set(this.modelMatrix).invert();
-  Material.powerDensity.set(lightSource.powerDensity);
-  Material.lightPos.set(lightSource.lightPos);
+
   Material.spotLightDirection.set(lightSource.spotLightDirection);
+    Material.powerDensity = lightSource.powerDensity;
+  Material.lightPos = lightSource.lightPos;
   this.mesh.draw(); 
 };
 
