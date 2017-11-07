@@ -30,6 +30,14 @@ MultiMesh.prototype.draw = function(gl){
   } 
 }; 
 
+MultiMesh.prototype.drawShadow = function(gl,material){ 
+  for (let i = 0; i < this.meshes.length; i++) { 
+    this.meshes[i].drawShadow(gl,material); 
+  } 
+}; 
+
+
+
 MultiMesh.prototype.setUniform = function(uniformName,uniformValue){
 	for(let i=0; i < this.materials.length; i++){
 		this.materials[i][uniformName].set(uniformValue);

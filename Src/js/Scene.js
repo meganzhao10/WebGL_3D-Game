@@ -2,9 +2,13 @@
 let Scene = function(gl) {
   this.texturevsIdle = new Shader(gl, gl.VERTEX_SHADER, "texture_idle_vs.essl");
   this.texturefsSolid = new Shader(gl, gl.FRAGMENT_SHADER, "texture_fs.essl");
+  this.texturefsShadow = new Shader(gl, gl.FRAGMENT_SHADER, "shadow_fs.essl");
   this.textureProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsSolid);
+  this.shadowProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsShadow);
 
   this.gameObjects = [];
+
+  this.shadowMaterial = new Material(gl, this.shadowProgram);
 
   //ground object
   this.TexturedQuadGeometry = new TexturedQuadGeometry(gl);
@@ -13,6 +17,7 @@ let Scene = function(gl) {
   this.quadMaterial.colorTexture.set(this.quadTexture.glTexture);
   this.quadMesh = new Mesh(this.TexturedQuadGeometry,this.quadMaterial); 
   this.quadObject = new GameObject(this.quadMesh);
+  this.quadObject.ground = true;
   this.gameObjects.push(this.quadObject);
   
   //car object
@@ -21,7 +26,7 @@ let Scene = function(gl) {
   this.carMaterial.colorTexture.set(this.carTexture.glTexture);
   this.carMesh = new MultiMesh(gl,"json/chevy/chassis.json",[this.carMaterial]);
   this.carObject = new GameObject(this.carMesh);
-  this.carObject.position.set(0,0,1);
+  this.carObject.position.set(0,0.3,4.0);
   this.gameObjects.push(this.carObject);
 
 
@@ -58,7 +63,7 @@ let Scene = function(gl) {
   this.heli1Material.colorTexture.set(this.heli1Texture.glTexture);
   this.heli1Mesh = new MultiMesh(gl,"json/heli/heli1.json",[this.heli1Material]);
   this.heli1Object = new GameObject(this.heli1Mesh); 
-  this.heli1Object.position.set(0.2,0,1); 
+  this.heli1Object.position.set(0.5,0,3.0); 
   this.gameObjects.push(this.heli1Object);
 
   this.mainrotorMesh = new MultiMesh(gl,"json/heli/mainrotor.json",[this.heli1Material, this.heli1Material]);
@@ -70,27 +75,36 @@ let Scene = function(gl) {
   // this.alrscrewMesh = new MultiMesh(gl,"json/thunderbolt_airscrew.json",[this.heli1Material]);
   // this.alrscrewObject = new GameObject(this.alrscrewMesh);
   // this.gameObjects.push(this.alrscrewObject);
-
-  // this.smoothTreeMesh = new MultiMesh(gl,"json/smoothTree.json",[]);
-  // this.smoothTreeObject = new GameObject(this.smoothTreeMesh);
-  // this.gameObjects.push(this.smoothTreeObject);
+  this.treeMaterial = new Material(gl,this.textureProgram);
+  this.treeTexture = new Texture2D(gl, 'json/tree.png');
+  this.treeMaterial.colorTexture.set(this.treeTexture.glTexture);
+  this.treeMesh = new MultiMesh(gl,"json/tree.json",[this.treeMaterial]);
+  this.treeObject1 = new GameObject(this.treeMesh);
+  this.treeObject2 = new GameObject(this.treeMesh);
+  this.treeObject3 = new GameObject(this.treeMesh);
+  this.treeObject1.position.set(Math.random()*2,0,Math.random()*2);
+  this.treeObject2.position.set(Math.random()*2,0,Math.random()*2);
+  this.treeObject3.position.set(Math.random()*2,0,Math.random()*2);
+  this.gameObjects.push(this.treeObject1);
+  this.gameObjects.push(this.treeObject2);
+  this.gameObjects.push(this.treeObject3);
+  
 
 
   this.lightSource = new LightSource();
   this.lightSource.lightPos = new Vec4Array(2);
-  this.lightSource.lightPos.at(0).set(0,0,1,0); // the last 0 indicates that it's a directional light
+  this.lightSource.lightPos.at(0).set(0,1,1,0); // the last 0 indicates that it's a directional light
   this.lightSource.lightPos.at(1).set(this.carObject.position.x,this.carObject.position.y,
     this.carObject.position.z, 1);
   this.lightSource.lightPowerDensity = new Vec4Array(2);
   this.lightSource.lightPowerDensity.at(0).set(0.9,0.9,0.9,1); 
   this.lightSource.lightPowerDensity.at(1).set(5,5,5,1);
-  this.lightSource.mainDir = new Vec3();
-  this.lightSource.mainDir.set(1,0,0); 
+  this.lightSource.mainDir = new Vec4();
   //powerDensity for directional light between 0 and 1
   //powerDensity for point light (10, 100, 1000,1), if white surface with this source, would be mostly blue, things that are close to it will be green, things really close will be white
   
   this.camera = new PerspectiveCamera();
-  this.camera.position.set(0.0,0.0,2.0);
+  this.camera.position.set(0.0,1.0,6.0);
   this.rotation = 0;
 };
 
@@ -100,7 +114,6 @@ Scene.prototype.update = function(gl, keysPressed) {
   let dt = (timeAtThisFrame - this.timeAtLastFrame) / 1000.0;
   this.timeAtLastFrame = timeAtThisFrame;
   let speed = 0.5;
-
   this.camera.move(dt,keysPressed);
 
   // clear the screen
@@ -111,7 +124,6 @@ Scene.prototype.update = function(gl, keysPressed) {
   this.rotation += 0.03;
   this.mainrotorObject.orientation = this.rotation;
   this.mainrotorObject.rotateAxis.set(0, 1, 0);
-  this.carObject.orientation = 1.3;
   this.carObject.rotateAxis.set(0,1,0);
 
   if(keysPressed.LEFT) { 
@@ -127,29 +139,38 @@ Scene.prototype.update = function(gl, keysPressed) {
     this.heli1Object.position.add(0,0,speed * dt); 
   } 
   if(keysPressed.J) { 
-    this.carObject.position.add(-speed * dt,0,0); 
+    this.carObject.orientation += 0.03;
+    var x = new Mat4();
+    x.set().rotate(this.carObject.orientation,this.carObject.rotateAxis);
+    this.carObject.direction.set(0,0,1,0).mul(x);
   } 
   if(keysPressed.L) { 
-    this.carObject.position.add(speed * dt,0,0); 
+    this.carObject.orientation -= 0.03;
+    var y = new Mat4();
+    y.set().rotate(this.carObject.orientation,this.carObject.rotateAxis);
+    this.carObject.direction.set(0,0,1,0).mul(y);
   } 
   if(keysPressed.I) { 
-    this.carObject.position.add(0,0,-speed * dt); 
+    this.carObject.position.add(this.carObject.direction.x * 0.02,this.carObject.direction.y * 0.02,this.carObject.direction.z * 0.02); 
   } 
   if(keysPressed.K) { 
-    this.carObject.position.add(0,0,speed * dt); 
+    this.carObject.position.add(-this.carObject.direction.x * 0.02,-this.carObject.direction.y * 0.02,-this.carObject.direction.z * 0.02); 
   } 
 
   this.lightSource.lightPos.at(1).set(this.carObject.position.x,this.carObject.position.y,
     this.carObject.position.z,1);
-  //this.lightSource.mainDir.set(this.carObject.position);
+  this.lightSource.mainDir.set(this.carObject.direction);
 
-  
+
   for (var i = 0; i < this.gameObjects.length; i++){
       
       if(this.gameObjects[i].parent == null){
         this.gameObjects[i].scale.set(0.01,0.01,0.01);
       }
       this.gameObjects[i].draw(this.camera, this.lightSource);
+      if (!this.gameObjects[i].ground){
+        this.gameObjects[i].drawShadow(this.camera, this.shadowMaterial, this.lightSource.lightPos.at(0));
+      }
   }
 
 }

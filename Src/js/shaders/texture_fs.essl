@@ -4,7 +4,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	uniform sampler2D colorTexture; 
 	uniform vec4 lightPos[2]; // xyz is the direction, w is 0
 	uniform vec4 lightPowerDensity[2]; // w ignored
-	uniform vec3 mainDir;
+	uniform vec4 mainDir;
 	uniform vec3 cameraPosition;
 
 	varying vec4 worldPos;
@@ -22,7 +22,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 
 			vec4 powerDensity;
 			if (lightPos[i].w == 1.0){
-				powerDensity = lightPowerDensity[i] * pow(max(0.0,dot(normalize(mainDir),normalize((-1.0) * lightDir))), 5.0);
+				powerDensity = lightPowerDensity[i] * pow(max(0.0,dot(normalize(mainDir.xyz),normalize((-1.0) * lightDir))), 5.0);
 			} else{
 				powerDensity = lightPowerDensity[i];
 			}

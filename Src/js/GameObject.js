@@ -5,27 +5,18 @@ let GameObject = function(mesh) {
   this.position = new Vec3(0, 0, 0); 
   this.orientation = 0;
   this.rotateAxis = new Vec3(0,0,0);
-  this.scale = new Vec3(0.45, 0.45, 1); 
+  this.scale = new Vec3(1, 1, 1); 
   this.angularVelocity = 0;
+  this.direction = new Vec4(0,0,1,0);  
   this.modelMatrix = new Mat4(); 
+  this.ground = false;
 };
-
-// GameObject.prototype.drawShadow = function(Vec3 lightDir){
-//   this.updateModelMatrix();
-//   Material.modelMatrix.set(this.modelMatrix);
-//   Material.modelMatrixInverse.set(this.modelMatrix).invert();
-//   Material.modelViewProjMatrix.set(this.modelMatrix);
-//   if (this.parent != null){
-//     Material.modelViewProjMatrix.mul(this.parent.modelMatrix);
-//   }
-
-  
-
-// };
 
 GameObject.prototype.updateModelMatrix = function(){ 
 // TODO: set the model matrix according to the 
 // position, orientation, and scale
+
+
   this.modelMatrix.set().
     scale(this.scale).
     translate(0,0,0).
@@ -33,7 +24,25 @@ GameObject.prototype.updateModelMatrix = function(){
     rotate(this.orientation,this.rotateAxis).
     translate(this.position);
 
+  if (this.parent != null){
+    this.modelMatrix.mul(this.parent.modelMatrix);
+  }
+
 };
+
+GameObject.prototype.drawShadow = function(camera,material,lightDir){
+  this.updateModelMatrix();
+  Material.modelMatrix.set(this.modelMatrix);
+  Material.modelMatrix.scale(1,0,1).translate(0, 0.01, 0);
+
+  Material.modelMatrixInverse.set(Material.modelMatrix).invert();
+  Material.modelViewProjMatrix.set(Material.modelMatrix);
+
+  Material.modelViewProjMatrix.mul(camera.viewProjMatrix);
+
+  this.mesh.drawShadow(material); 
+};
+
 
 GameObject.prototype.draw = function(camera,lightSource){ 
   this.updateModelMatrix();
@@ -43,9 +52,7 @@ GameObject.prototype.draw = function(camera,lightSource){
   Material.modelMatrixInverse.set(this.modelMatrix).invert();
 
   Material.modelViewProjMatrix.set(this.modelMatrix);
-  if (this.parent != null){
-  	Material.modelViewProjMatrix.mul(this.parent.modelMatrix);
-  }
+
   Material.modelViewProjMatrix.mul(camera.viewProjMatrix);
   Material.cameraPosition.set(camera.position);
   Material.lightPowerDensity = lightSource.lightPowerDensity;
