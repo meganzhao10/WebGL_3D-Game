@@ -6,10 +6,10 @@ let TexturedQuadGeometry = function(gl) {
   gl.bufferData(gl.ARRAY_BUFFER, 
     new Float32Array([ 
         0, 0, 0, 1,
-        -10, 0, 0, 0,
+        -10, 0, -10, 0,
         0, 0, 10, 0,
-        10, 0, 0, 0,
-        0, 0, -10, 0,
+        10, 0, -10, 0,
+        //0, 0, -10, 0,
 
     ]), 
     gl.STATIC_DRAW); 
@@ -22,7 +22,7 @@ let TexturedQuadGeometry = function(gl) {
          0, 1, 0, 
          0, 1, 0, 
          0, 1, 0, 
-         0, 1, 0, 
+         //0, 1, 0, 
     ]), 
     gl.STATIC_DRAW); 
 
@@ -31,10 +31,10 @@ let TexturedQuadGeometry = function(gl) {
   gl.bufferData(gl.ARRAY_BUFFER, 
     new Float32Array([ 
          0, 0, 
-         -10, 0,
+         -10, -10,
          0, 10, 
-         10, 0, 
-         0, -10, 
+         10, -10, 
+         //0, -10, 
     ]), 
     gl.STATIC_DRAW);
 
@@ -44,8 +44,8 @@ let TexturedQuadGeometry = function(gl) {
     new Uint16Array([ 
       0, 1, 2, 
       0, 2, 3, 
-      0, 3, 4,
-      0, 4, 1,
+      0, 3, 1,
+      //0, 4, 1,
     ]), 
     gl.STATIC_DRAW); 
   
@@ -86,7 +86,7 @@ TexturedQuadGeometry.prototype.draw = function() {
   // set index buffer to pipeline input 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer); 
   
-  gl.drawElements(gl.TRIANGLES, 12, gl.UNSIGNED_SHORT, 0); 
+  gl.drawElements(gl.TRIANGLES, 9, gl.UNSIGNED_SHORT, 0); 
     
 }; 
 
