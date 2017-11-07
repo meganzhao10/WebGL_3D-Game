@@ -2,9 +2,9 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	precision highp float;
 	varying vec2 texCoord;
 	uniform sampler2D colorTexture; 
-	uniform vec4 lightPos[1]; // xyz is the direction, w is 0
-	uniform vec4 lightPowerDensity[1]; // w ignored
-	uniform vec4 mainDir[1];
+	uniform vec4 lightPos[2]; // xyz is the direction, w is 0
+	uniform vec4 lightPowerDensity[2]; // w ignored
+	uniform vec3 mainDir;
 	uniform vec3 cameraPosition;
 
 	varying vec4 worldPos;
@@ -14,42 +14,36 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 
 		gl_FragColor = vec4(0,0,0,0);
 
-		for (int i = 0; i < 1; i++){
-			vec3 lightDir = lightPos[0].xyz - worldPos.xyz * lightPos[0].w;
+		for (int i = 0; i < 2; i++){
+
+			vec3 lightDir = lightPos[i].xyz - worldPos.xyz * lightPos[i].w;
 			vec3 viewDir = cameraPosition - worldPos.xyz;
+			vec3 halfwayVector = normalize((viewDir + lightDir) * (-1.0));
 
 			vec4 powerDensity;
-			if (mainDir[i].w == 1.0){
-				powerDensity = lightPowerDensity[i] * pow(max(0.0,dot(normalize(mainDir[i].xyz),normalize((-1.0) * lightDir))), 0.2);
+			if (lightPos[i].w == 1.0){
+				powerDensity = lightPowerDensity[i] * pow(max(0.0,dot(normalize(mainDir),normalize((-1.0) * lightDir))), 5.0);
 			} else{
 				powerDensity = lightPowerDensity[i];
 			}
 
-			float cosTheta = dot(normalize(lightDir), normalize(worldNormal));
+			float cosTheta = max(dot(normalize(lightDir), normalize(worldNormal)),0.0);
 			vec4 diffuseLight = powerDensity / pow(length(lightDir), 2.0) * vec4(
 				texture2D(colorTexture, texCoord).rgb * cosTheta,1);
 
-			float shininess = 0.6;
-			vec3 halfwayVector = normalize(viewDir + lightDir) * (-1.0);
-			float brightness = pow(max(0.0, dot(normalize(worldNormal),halfwayVector)),shininess);
-			vec4 specularLight = powerDensity / pow(length(lightDir), 2.0) * vec4(
-				texture2D(colorTexture, texCoord).rgb * brightness,1);
 
-			//vec3 lightToSurfaceDistance = lightPos[1].xyz - worldPos.xyz * lightPos[1].w;
-			//float spotCos = dot(spotLightDirection, lightToSurfaceDistance);
-			//float spotPowerDensity = pow(spotCos, 0.1);
-			//vec4 spotLight = vec4(texture2D(colorTexture, texCoord).rgb * spotPowerDensity,1);
+			float shininess = 12.0;
+			//vec4 specularLight = vec4(0,0,0,0);
+
+			//if (cosTheta > 0.0) {
+				float specularLightWeight = pow(max(0.0, dot(normalize(		worldNormal),halfwayVector)),shininess);
+    			vec4 specularLight = powerDensity / pow(length(lightDir), 2.0) *
+    				vec4(vec3(1,1,1) * specularLightWeight, 1);
+    		//}
 
 			gl_FragColor += diffuseLight + specularLight;
 		}
 
-
-		//add for loop to add up all the light together
-		//mmm = normalize(lightPos.xyz - worldPos.xyz * lightPos.w)
-		//for directional
-		//vec3 M = powerDensity.rgb
-		//for point
-		//distance between lightPs and worldPos and square; powerDensity.rgb / dot(x,x)
-		//x,x is the mmm without normalize
 	}
-`;
+`;		
+		

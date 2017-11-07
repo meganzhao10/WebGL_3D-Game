@@ -7,7 +7,7 @@ let TexturedQuadGeometry = function(gl) {
     new Float32Array([ 
         0, -1, -50, 1,
         -50, -1, -50, 0,
-         0, -1, 1, 0,
+         0, -1, 10, 0,
          50, -1, 50, 0,
 
     ]), 
@@ -82,7 +82,7 @@ TexturedQuadGeometry.prototype.draw = function() {
   // set index buffer to pipeline input 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer); 
   
-  gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0); 
+  gl.drawElements(gl.TRIANGLES, 9, gl.UNSIGNED_SHORT, 0); 
     
 }; 
 

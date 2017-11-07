@@ -21,7 +21,7 @@ let Scene = function(gl) {
   this.carMaterial.colorTexture.set(this.carTexture.glTexture);
   this.carMesh = new MultiMesh(gl,"json/chevy/chassis.json",[this.carMaterial]);
   this.carObject = new GameObject(this.carMesh);
-  this.carObject.position.set(0,0,-0.5);
+  this.carObject.position.set(0,0,1);
   this.gameObjects.push(this.carObject);
 
 
@@ -58,7 +58,7 @@ let Scene = function(gl) {
   this.heli1Material.colorTexture.set(this.heli1Texture.glTexture);
   this.heli1Mesh = new MultiMesh(gl,"json/heli/heli1.json",[this.heli1Material]);
   this.heli1Object = new GameObject(this.heli1Mesh); 
-  this.heli1Object.position.set(0.2,0,-0.4); 
+  this.heli1Object.position.set(0.2,0,1); 
   this.gameObjects.push(this.heli1Object);
 
   this.mainrotorMesh = new MultiMesh(gl,"json/heli/mainrotor.json",[this.heli1Material, this.heli1Material]);
@@ -77,16 +77,20 @@ let Scene = function(gl) {
 
 
   this.lightSource = new LightSource();
-  this.lightSource.lightPos = new Vec4Array(1);
+  this.lightSource.lightPos = new Vec4Array(2);
   this.lightSource.lightPos.at(0).set(0,0,1,0); // the last 0 indicates that it's a directional light
-  this.lightSource.lightPowerDensity = new Vec4Array(1);
-  this.lightSource.lightPowerDensity.at(0).set(1,1,1,1); 
-  this.lightSource.mainDir = new Vec4Array(1);
-  this.lightSource.mainDir.at(0).set(this.carObject.position,1); 
+  this.lightSource.lightPos.at(1).set(this.carObject.position.x,this.carObject.position.y,
+    this.carObject.position.z, 1);
+  this.lightSource.lightPowerDensity = new Vec4Array(2);
+  this.lightSource.lightPowerDensity.at(0).set(0.9,0.9,0.9,1); 
+  this.lightSource.lightPowerDensity.at(1).set(5,5,5,1);
+  this.lightSource.mainDir = new Vec3();
+  this.lightSource.mainDir.set(1,0,0); 
   //powerDensity for directional light between 0 and 1
   //powerDensity for point light (10, 100, 1000,1), if white surface with this source, would be mostly blue, things that are close to it will be green, things really close will be white
   
   this.camera = new PerspectiveCamera();
+  this.camera.position.set(0.0,0.0,2.0);
   this.rotation = 0;
 };
 
@@ -107,12 +111,20 @@ Scene.prototype.update = function(gl, keysPressed) {
   this.rotation += 0.03;
   this.mainrotorObject.orientation = this.rotation;
   this.mainrotorObject.rotateAxis.set(0, 1, 0);
+  this.carObject.orientation = 1.3;
+  this.carObject.rotateAxis.set(0,1,0);
 
   if(keysPressed.LEFT) { 
     this.heli1Object.position.add(-speed * dt,0,0); 
   } 
   if(keysPressed.RIGHT) { 
     this.heli1Object.position.add(speed * dt,0,0); 
+  } 
+  if(keysPressed.UP) { 
+    this.heli1Object.position.add(0,0,-speed * dt); 
+  } 
+  if(keysPressed.DOWN) { 
+    this.heli1Object.position.add(0,0,speed * dt); 
   } 
   if(keysPressed.J) { 
     this.carObject.position.add(-speed * dt,0,0); 
@@ -127,6 +139,11 @@ Scene.prototype.update = function(gl, keysPressed) {
     this.carObject.position.add(0,0,speed * dt); 
   } 
 
+  this.lightSource.lightPos.at(1).set(this.carObject.position.x,this.carObject.position.y,
+    this.carObject.position.z,1);
+  //this.lightSource.mainDir.set(this.carObject.position);
+
+  
   for (var i = 0; i < this.gameObjects.length; i++){
       
       if(this.gameObjects[i].parent == null){
