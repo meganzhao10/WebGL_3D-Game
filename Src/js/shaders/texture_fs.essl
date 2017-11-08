@@ -12,37 +12,35 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 
 	void main(void) {
 
-		gl_FragColor = vec4(0,0,0,0);
+		gl_FragColor = vec4(0,0,0,1);
+		vec3 color = vec3(0,0,0);
 
 		for (int i = 0; i < 2; i++){
 
-			vec3 lightDir = lightPos[i].xyz - worldPos.xyz * lightPos[i].w;
-			vec3 viewDir = cameraPosition - worldPos.xyz;
-			vec3 halfwayVector = normalize((viewDir + lightDir) * (-1.0));
+			vec3 lightDiff = lightPos[i].xyz - worldPos.xyz * lightPos[i].w;
+			vec3 viewDiff = cameraPosition - worldPos.xyz;
+			vec3 halfwayVector = normalize(viewDiff) + normalize(lightDiff * (-1.0));
 
-			vec4 powerDensity;
+			vec3 powerDensity;
 			if (lightPos[i].w == 1.0){
-				powerDensity = lightPowerDensity[i] * pow(max(0.0,dot(normalize(mainDir.xyz),normalize((-1.0) * lightDir))), 5.0);
+				powerDensity = lightPowerDensity[i].xyz * pow(max(0.0,dot(normalize(mainDir.xyz),normalize((-1.0) * lightDiff))), 5.0);
 			} else{
-				powerDensity = lightPowerDensity[i];
+				powerDensity = lightPowerDensity[i].xyz;
 			}
 
-			float cosTheta = max(dot(normalize(lightDir), normalize(worldNormal)),0.0);
-			vec4 diffuseLight = powerDensity / pow(length(lightDir), 2.0) * vec4(
-				texture2D(colorTexture, texCoord).rgb * cosTheta,1);
+			float cosTheta = max(dot(normalize(lightDiff), normalize(worldNormal)),0.0);
+			vec3 diffuseLight = powerDensity / pow(length(lightDiff), 2.0) * 
+				texture2D(colorTexture, texCoord).rgb * cosTheta;
 
 
-			float shininess = 12.0;
-			//vec4 specularLight = vec4(0,0,0,0);
+			float shininess = 3.0;
+			float specularLightWeight = pow(max(0.0, dot(normalize(worldNormal),halfwayVector)),shininess);
+			vec3 specularLight = texture2D(colorTexture, texCoord).rgb * specularLightWeight;
 
-			//if (cosTheta > 0.0) {
-				float specularLightWeight = pow(max(0.0, dot(normalize(		worldNormal),halfwayVector)),shininess);
-    			vec4 specularLight = powerDensity / pow(length(lightDir), 2.0) *
-    				vec4(vec3(1,1,1) * specularLightWeight, 1);
-    		//}
-
-			gl_FragColor += diffuseLight + specularLight;
+			color += diffuseLight + specularLight;
 		}
+
+		gl_FragColor = vec4(color,1);
 
 	}
 `;		

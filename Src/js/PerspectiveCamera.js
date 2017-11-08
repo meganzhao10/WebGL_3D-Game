@@ -97,6 +97,7 @@ PerspectiveCamera.prototype.move = function(dt, keysPressed) {
 
 PerspectiveCamera.prototype.mouseDown = function() { 
   this.isDragging = true; 
+  console.log(this.yaw);
   this.mouseDelta.set(); 
 }; 
   
@@ -108,6 +109,7 @@ PerspectiveCamera.prototype.mouseMove = function(event) {
   
 PerspectiveCamera.prototype.mouseUp = function() { 
   this.isDragging = false; 
+  console.log(this.yaw);
 }; 
 
 // ar: canvas.clientWidth / canvas.clientHeight

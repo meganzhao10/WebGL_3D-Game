@@ -26,7 +26,7 @@ let Scene = function(gl) {
   this.carMaterial.colorTexture.set(this.carTexture.glTexture);
   this.carMesh = new MultiMesh(gl,"json/chevy/chassis.json",[this.carMaterial]);
   this.carObject = new GameObject(this.carMesh);
-  this.carObject.position.set(0,0.05,4.0);
+  this.carObject.position.set(0,0.07,4.0);
   this.carObject.orientation = 3.2;
   this.gameObjects.push(this.carObject);
 
@@ -80,15 +80,20 @@ let Scene = function(gl) {
   this.treeTexture = new Texture2D(gl, 'json/tree.png');
   this.treeMaterial.colorTexture.set(this.treeTexture.glTexture);
   this.treeMesh = new MultiMesh(gl,"json/tree.json",[this.treeMaterial]);
-  this.treeObject1 = new GameObject(this.treeMesh);
-  this.treeObject2 = new GameObject(this.treeMesh);
-  this.treeObject3 = new GameObject(this.treeMesh);
-  this.treeObject1.position.set(Math.random()*2,0,Math.random()*2);
-  this.treeObject2.position.set(Math.random()*2,0,Math.random()*2);
-  this.treeObject3.position.set(Math.random()*2,0,Math.random()*2);
-  this.gameObjects.push(this.treeObject1);
-  this.gameObjects.push(this.treeObject2);
-  this.gameObjects.push(this.treeObject3);
+  for (var i=0; i < 200; i++){
+    var tree = new GameObject(this.treeMesh);
+    if (Math.random() < 0.25){
+      tree.position.set(Math.random()*10,0,Math.random()*10);
+    } else if (Math.random() < 0.5){
+      tree.position.set(-Math.random()*10,0,-Math.random()*10);
+    } else if (Math.random() < 0.75){
+      tree.position.set(-Math.random()*10,0,Math.random()*10);
+    } else {
+      tree.position.set(Math.random()*10,0,-Math.random()*10);
+    }
+    
+    this.gameObjects.push(tree);
+  }
   
 
 
@@ -115,7 +120,7 @@ Scene.prototype.update = function(gl, keysPressed) {
   let dt = (timeAtThisFrame - this.timeAtLastFrame) / 1000.0;
   this.timeAtLastFrame = timeAtThisFrame;
   let speed = 0.5;
-  
+  this.camera.move(dt, keysPressed);
 
   // clear the screen
   gl.clearColor(223/255, 208/255, 159/255, 1.0);
@@ -126,8 +131,6 @@ Scene.prototype.update = function(gl, keysPressed) {
   this.mainrotorObject.orientation = this.rotation;
   this.mainrotorObject.rotateAxis.set(0, 1, 0);
   this.carObject.rotateAxis.set(0,1,0);
-  this.camera.move(dt,keysPressed);
-  
 
   if(keysPressed.LEFT) { 
     this.heli1Object.position.add(-speed * dt,0,0); 
@@ -146,16 +149,17 @@ Scene.prototype.update = function(gl, keysPressed) {
     var x = new Mat4();
     x.set().rotate(this.carObject.orientation,this.carObject.rotateAxis);
     this.carObject.direction.set(0,0,1,0).mul(x);
-
-    //this.camera.ahead.set(-this.carObject.direction.x, this.carObject.direction.y * 0.5, this.carObject.direction.z * 0.5);
+    // this.camera.isDragging = true;
+    // this.camera.move(dt, keysPressed);
+    // this.camera.yaw += 0.001;
+    // this.camera.isDragging = false;
   } 
   if(keysPressed.L) { 
     this.carObject.orientation -= 0.03;
     var y = new Mat4();
     y.set().rotate(this.carObject.orientation,this.carObject.rotateAxis);
     this.carObject.direction.set(0,0,1,0).mul(y);
-    //this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
-    //this.camera.ahead.set(-this.carObject.direction.x, this.carObject.direction.y * 0.5, -this.carObject.direction.z * 0.1);
+
   } 
   if(keysPressed.I) { 
     this.carObject.position.add(this.carObject.direction.x * 0.02,this.carObject.direction.y,this.carObject.direction.z * 0.02); 
@@ -167,11 +171,18 @@ Scene.prototype.update = function(gl, keysPressed) {
   } 
 
   this.lightSource.lightPos.at(1).set(this.carObject.position.x+this.carObject.direction.x * 0.2,
-    this.carObject.position.y + this.carObject.direction.y * 0.2,
-    this.carObject.position.z + this.carObject.direction.z * 0.2,1);
+  this.carObject.position.y + this.carObject.direction.y * 0.2,
+  this.carObject.position.z + this.carObject.direction.z * 0.2,1);
   this.lightSource.mainDir.set(this.carObject.direction);
 
+  // var length = Math.sqrt(this.carObject.direction.x*this.carObject.direction.x
+  //   +this.carObject.direction.z*this.carObject.direction.z);
+  // var normalizedX = this.carObject.direction.x/length; 
+  // var normalizedZ = this.carObject.direction.z/length; 
 
+  // this.camera.position.set(this.carObject.position.x - normalizedX * 1.7,
+  //   this.carObject.position.y+0.1, 
+  //   this.carObject.position.z+0.7 - normalizedZ*1.3);
 
 
   for (var i = 0; i < this.gameObjects.length; i++){
