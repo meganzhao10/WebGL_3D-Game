@@ -26,7 +26,8 @@ let Scene = function(gl) {
   this.carMaterial.colorTexture.set(this.carTexture.glTexture);
   this.carMesh = new MultiMesh(gl,"json/chevy/chassis.json",[this.carMaterial]);
   this.carObject = new GameObject(this.carMesh);
-  this.carObject.position.set(0,0.3,4.0);
+  this.carObject.position.set(0,0.05,4.0);
+  this.carObject.orientation = 3.2;
   this.gameObjects.push(this.carObject);
 
 
@@ -104,7 +105,7 @@ let Scene = function(gl) {
   //powerDensity for point light (10, 100, 1000,1), if white surface with this source, would be mostly blue, things that are close to it will be green, things really close will be white
   
   this.camera = new PerspectiveCamera();
-  this.camera.position.set(0.0,1.0,6.0);
+  this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
   this.rotation = 0;
 };
 
@@ -114,7 +115,7 @@ Scene.prototype.update = function(gl, keysPressed) {
   let dt = (timeAtThisFrame - this.timeAtLastFrame) / 1000.0;
   this.timeAtLastFrame = timeAtThisFrame;
   let speed = 0.5;
-  this.camera.move(dt,keysPressed);
+  
 
   // clear the screen
   gl.clearColor(223/255, 208/255, 159/255, 1.0);
@@ -125,6 +126,8 @@ Scene.prototype.update = function(gl, keysPressed) {
   this.mainrotorObject.orientation = this.rotation;
   this.mainrotorObject.rotateAxis.set(0, 1, 0);
   this.carObject.rotateAxis.set(0,1,0);
+  this.camera.move(dt,keysPressed);
+  
 
   if(keysPressed.LEFT) { 
     this.heli1Object.position.add(-speed * dt,0,0); 
@@ -143,23 +146,32 @@ Scene.prototype.update = function(gl, keysPressed) {
     var x = new Mat4();
     x.set().rotate(this.carObject.orientation,this.carObject.rotateAxis);
     this.carObject.direction.set(0,0,1,0).mul(x);
+
+    //this.camera.ahead.set(-this.carObject.direction.x, this.carObject.direction.y * 0.5, this.carObject.direction.z * 0.5);
   } 
   if(keysPressed.L) { 
     this.carObject.orientation -= 0.03;
     var y = new Mat4();
     y.set().rotate(this.carObject.orientation,this.carObject.rotateAxis);
     this.carObject.direction.set(0,0,1,0).mul(y);
+    //this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
+    //this.camera.ahead.set(-this.carObject.direction.x, this.carObject.direction.y * 0.5, -this.carObject.direction.z * 0.1);
   } 
   if(keysPressed.I) { 
-    this.carObject.position.add(this.carObject.direction.x * 0.02,this.carObject.direction.y * 0.02,this.carObject.direction.z * 0.02); 
+    this.carObject.position.add(this.carObject.direction.x * 0.02,this.carObject.direction.y,this.carObject.direction.z * 0.02); 
+    this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
   } 
   if(keysPressed.K) { 
-    this.carObject.position.add(-this.carObject.direction.x * 0.02,-this.carObject.direction.y * 0.02,-this.carObject.direction.z * 0.02); 
+    this.carObject.position.add(-this.carObject.direction.x * 0.02,-this.carObject.direction.y,-this.carObject.direction.z * 0.02); 
+    this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
   } 
 
-  this.lightSource.lightPos.at(1).set(this.carObject.position.x,this.carObject.position.y,
-    this.carObject.position.z,1);
+  this.lightSource.lightPos.at(1).set(this.carObject.position.x+this.carObject.direction.x * 0.2,
+    this.carObject.position.y + this.carObject.direction.y * 0.2,
+    this.carObject.position.z + this.carObject.direction.z * 0.2,1);
   this.lightSource.mainDir.set(this.carObject.direction);
+
+
 
 
   for (var i = 0; i < this.gameObjects.length; i++){

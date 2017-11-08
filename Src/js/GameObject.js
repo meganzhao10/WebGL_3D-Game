@@ -7,7 +7,7 @@ let GameObject = function(mesh) {
   this.rotateAxis = new Vec3(0,0,0);
   this.scale = new Vec3(1, 1, 1); 
   this.angularVelocity = 0;
-  this.direction = new Vec4(0,0,1,0);  
+  this.direction = new Vec4(0,0,-1,0);  
   this.modelMatrix = new Mat4(); 
   this.ground = false;
 };
