@@ -1,6 +1,26 @@
 # WebGL_3D-Game
 
 Implementing Features
+
+Before opening the html, 
+
+close Chrome first, then 
+
+allow file access
+must start Chrome with command line switch
+--allow_file_access_from_files
+it is a good idea to create a shortcut in Windows
+or type this on Mac OS X terminal
+open /Applications/Google\ Chrome.app --args --allow-file-access-from-files
+
+Improvement:
+phone-blinn
+camera follow when turn
+
+KEY: IJKL FOR MARBLE OBJECT SLOWPOKE
+	WASD
+	mouse drag
+
  
 Avatar -
 

@@ -3,8 +3,12 @@ let Scene = function(gl) {
   this.texturevsIdle = new Shader(gl, gl.VERTEX_SHADER, "texture_idle_vs.essl");
   this.texturefsSolid = new Shader(gl, gl.FRAGMENT_SHADER, "texture_fs.essl");
   this.texturefsShadow = new Shader(gl, gl.FRAGMENT_SHADER, "shadow_fs.essl");
+  this.texturefsMarble = new Shader(gl, gl.FRAGMENT_SHADER, "marble_fs.essl");
+  this.texturefsWood = new Shader(gl, gl.FRAGMENT_SHADER, "wood_fs.essl");
   this.textureProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsSolid);
   this.shadowProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsShadow);
+  this.uvMarbleProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsMarble);
+  this.uvWoodProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsWood);
 
   this.gameObjects = [];
 
@@ -19,6 +23,40 @@ let Scene = function(gl) {
   this.quadObject = new GameObject(this.quadMesh);
   this.quadObject.ground = true;
   this.gameObjects.push(this.quadObject);
+
+  //balloon
+  this.balloonMaterial = new Material(gl,this.textureProgram);
+  this.balloonTexture = new Texture2D(gl, 'json/balloon.png');
+  this.balloonMaterial.colorTexture.set(this.balloonTexture.glTexture);
+  this.balloonMesh = new MultiMesh(gl,"json/balloon.json",[this.balloonMaterial]);
+  for (var i=0; i < 20; i++){
+    var balloon = new GameObject(this.balloonMesh);
+    if (Math.random() < 0.25){
+      balloon.position.set(Math.random()*10,0.5,Math.random()*10);
+    } else if (Math.random() < 0.5){
+      balloon.position.set(-Math.random()*10,0.5,-Math.random()*10);
+    } else if (Math.random() < 0.75){
+      balloon.position.set(-Math.random()*10,0.5,Math.random()*10);
+    } else {
+      balloon.position.set(Math.random()*10,0.5,-Math.random()*10);
+    }
+    this.gameObjects.push(balloon);
+  }
+
+  //slowpoke marble
+  this.yadonMaterial1 = new Material(gl,this.uvMarbleProgram);
+  this.yadonMaterial2 = new Material(gl,this.uvMarbleProgram);
+  this.yadonMesh = new MultiMesh(gl,"json/Slowpoke.json",[this.yadonMaterial1, this.yadonMaterial2]);
+  this.yadonObject = new GameObject(this.yadonMesh);
+  this.yadonObject.position.set(-1,0.005,2.0);
+  this.gameObjects.push(this.yadonObject);
+  //wood
+  // this.yadonMaterial3 = new Material(gl,this.uvWoodProgram);
+  // this.yadonMaterial4 = new Material(gl,this.uvWoodProgram);
+  // this.yadonMeshWood = new MultiMesh(gl,"json/Slowpoke.json",[this.yadonMaterial3, this.yadonMaterial4]);
+  // this.yadonObject1 = new GameObject(this.yadonMeshWood);
+  // this.yadonObject1.position.set(1,0.005,2.0);
+  // this.gameObjects.push(this.yadonObject1);
   
   //car object
   this.carMaterial = new Material(gl,this.textureProgram);
@@ -131,19 +169,23 @@ Scene.prototype.update = function(gl, keysPressed) {
   this.mainrotorObject.rotateAxis.set(0, 1, 0);
   this.carObject.rotateAxis.set(0,1,0);
 
+  if(keysPressed.L){
+    this.yadonObject.position.add(dt * speed, 0, 0);
+  }
+
+  if(keysPressed.J){
+    this.yadonObject.position.add(-dt * speed, 0, 0);
+  }
+
+  if(keysPressed.I){
+    this.yadonObject.position.add(0, 0, dt * speed);
+  }
+
+  if(keysPressed.K){
+    this.yadonObject.position.add(0, 0, -dt * speed);
+  }
+ 
   if(keysPressed.LEFT) { 
-    this.heli1Object.position.add(-speed * dt,0,0); 
-  } 
-  if(keysPressed.RIGHT) { 
-    this.heli1Object.position.add(speed * dt,0,0); 
-  } 
-  if(keysPressed.UP) { 
-    this.heli1Object.position.add(0,0,-speed * dt); 
-  } 
-  if(keysPressed.DOWN) { 
-    this.heli1Object.position.add(0,0,speed * dt); 
-  } 
-  if(keysPressed.J) { 
     this.camera.isDragging = true;
     this.camera.yaw = 0.0;
     this.carObject.orientation += 0.03;
@@ -152,7 +194,7 @@ Scene.prototype.update = function(gl, keysPressed) {
     this.carObject.direction.set(0,0,1,0).mul(x);
     this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
   } 
-  if(keysPressed.L) { 
+  if(keysPressed.RIGHT) { 
     this.camera.isDragging = true;
     this.camera.yaw = 0.0;
     this.carObject.orientation -= 0.03;
@@ -161,13 +203,13 @@ Scene.prototype.update = function(gl, keysPressed) {
     this.carObject.direction.set(0,0,1,0).mul(y);
     this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
   } 
-  if(keysPressed.I) { 
+  if(keysPressed.UP) { 
     this.camera.isDragging = true;
     this.camera.yaw = 0.0;
     this.carObject.position.add(this.carObject.direction.x * 0.02,this.carObject.direction.y,this.carObject.direction.z * 0.02); 
     this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
   } 
-  if(keysPressed.K) { 
+  if(keysPressed.DOWN) { 
     this.camera.isDragging = true;
     this.camera.yaw = 0.0;
     this.carObject.position.add(-this.carObject.direction.x * 0.02,-this.carObject.direction.y,-this.carObject.direction.z * 0.02); 
@@ -175,7 +217,7 @@ Scene.prototype.update = function(gl, keysPressed) {
   }
 
   this.camera.move(dt, keysPressed);
-  this.camera.isDragging = false;
+
 
   if(keysPressed.T) {
     this.camera.isDragging = true;
@@ -192,17 +234,12 @@ Scene.prototype.update = function(gl, keysPressed) {
   this.lightSource.mainDir.set(this.carObject.direction);
 
 
-
-  // this.camera.position.set(this.carObject.position.x - normalizedX * 1.7,
-  //   this.carObject.position.y+0.1, 
-  //   this.carObject.position.z+0.7 - normalizedZ*1.3);
-
-
   for (var i = 0; i < this.gameObjects.length; i++){
       
       if(this.gameObjects[i].parent == null){
         this.gameObjects[i].scale.set(0.01,0.01,0.01);
       }
+      this.yadonObject.scale.set(0.05,0.05,0.05);
       this.gameObjects[i].draw(this.camera, this.lightSource);
       if (!this.gameObjects[i].ground){
         this.gameObjects[i].drawShadow(this.camera, this.shadowMaterial, this.lightSource.lightPos.at(0));
