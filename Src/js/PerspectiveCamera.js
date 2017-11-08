@@ -25,7 +25,15 @@ var PerspectiveCamera = function()
 }; 
 
 PerspectiveCamera.worldUp = new Vec3(0, 1, 0); 
+//add a function to to set carDir to camer ahead, then calculate right
  
+PerspectiveCamera.prototype.track = function(normalizedX, normalizedZ) {
+  this.ahead.set(normalizedX,0,normalizedZ);
+  this.right.setVectorProduct(
+      this.ahead,
+      PerspectiveCamera.worldUp ); 
+} 
+
 PerspectiveCamera.prototype.updateViewMatrix = function(){ 
   this.viewMatrix.set( 
     this.right.x          ,  this.right.y      ,  this.right.z       , 0, 
@@ -91,6 +99,7 @@ PerspectiveCamera.prototype.move = function(dt, keysPressed) {
   if(keysPressed.Q) { 
     this.position.addScaled(-this.speed * dt, PerspectiveCamera.worldUp); 
   } 
+
 
   this.updateViewMatrix(); 
 }; 

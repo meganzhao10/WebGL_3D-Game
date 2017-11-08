@@ -64,7 +64,7 @@ let Scene = function(gl) {
   this.heli1Material.colorTexture.set(this.heli1Texture.glTexture);
   this.heli1Mesh = new MultiMesh(gl,"json/heli/heli1.json",[this.heli1Material]);
   this.heli1Object = new GameObject(this.heli1Mesh); 
-  this.heli1Object.position.set(0.5,0,3.0); 
+  this.heli1Object.position.set(0.5,0.5,3.0); 
   this.gameObjects.push(this.heli1Object);
 
   this.mainrotorMesh = new MultiMesh(gl,"json/heli/mainrotor.json",[this.heli1Material, this.heli1Material]);
@@ -120,7 +120,6 @@ Scene.prototype.update = function(gl, keysPressed) {
   let dt = (timeAtThisFrame - this.timeAtLastFrame) / 1000.0;
   this.timeAtLastFrame = timeAtThisFrame;
   let speed = 0.5;
-  this.camera.move(dt, keysPressed);
 
   // clear the screen
   gl.clearColor(223/255, 208/255, 159/255, 1.0);
@@ -145,40 +144,54 @@ Scene.prototype.update = function(gl, keysPressed) {
     this.heli1Object.position.add(0,0,speed * dt); 
   } 
   if(keysPressed.J) { 
+    this.camera.isDragging = true;
+    this.camera.yaw = 0.0;
     this.carObject.orientation += 0.03;
     var x = new Mat4();
     x.set().rotate(this.carObject.orientation,this.carObject.rotateAxis);
     this.carObject.direction.set(0,0,1,0).mul(x);
-    // this.camera.isDragging = true;
-    // this.camera.move(dt, keysPressed);
-    // this.camera.yaw += 0.001;
-    // this.camera.isDragging = false;
+    this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
   } 
   if(keysPressed.L) { 
+    this.camera.isDragging = true;
+    this.camera.yaw = 0.0;
     this.carObject.orientation -= 0.03;
     var y = new Mat4();
     y.set().rotate(this.carObject.orientation,this.carObject.rotateAxis);
     this.carObject.direction.set(0,0,1,0).mul(y);
-
+    this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
   } 
   if(keysPressed.I) { 
+    this.camera.isDragging = true;
+    this.camera.yaw = 0.0;
     this.carObject.position.add(this.carObject.direction.x * 0.02,this.carObject.direction.y,this.carObject.direction.z * 0.02); 
     this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
   } 
   if(keysPressed.K) { 
+    this.camera.isDragging = true;
+    this.camera.yaw = 0.0;
     this.carObject.position.add(-this.carObject.direction.x * 0.02,-this.carObject.direction.y,-this.carObject.direction.z * 0.02); 
     this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
-  } 
+  }
+
+  this.camera.move(dt, keysPressed);
+  this.camera.isDragging = false;
+
+  if(keysPressed.T) {
+    this.camera.isDragging = true;
+    this.camera.yaw += 0.05;
+    this.camera.move(dt, keysPressed);
+    this.camera.isDragging = false;
+    this.camera.position.add(dt, 0, dt);
+  }
+
 
   this.lightSource.lightPos.at(1).set(this.carObject.position.x+this.carObject.direction.x * 0.2,
   this.carObject.position.y + this.carObject.direction.y * 0.2,
   this.carObject.position.z + this.carObject.direction.z * 0.2,1);
   this.lightSource.mainDir.set(this.carObject.direction);
 
-  // var length = Math.sqrt(this.carObject.direction.x*this.carObject.direction.x
-  //   +this.carObject.direction.z*this.carObject.direction.z);
-  // var normalizedX = this.carObject.direction.x/length; 
-  // var normalizedZ = this.carObject.direction.z/length; 
+
 
   // this.camera.position.set(this.carObject.position.x - normalizedX * 1.7,
   //   this.carObject.position.y+0.1, 
