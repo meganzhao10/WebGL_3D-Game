@@ -12,7 +12,7 @@ let Scene = function(gl) {
 
   this.texturefsMap = new Shader(gl, gl.FRAGMENT_SHADER, "envirMap_fs.essl");
   this.envirvsIdle = new Shader(gl, gl.VERTEX_SHADER, "envir_idle_vs.essl");
-  this.envirfsSolid = new Shader(gl, gl.FRAGMENT_SHADER, "rayCasting_fs.essl");
+  this.envirfsSolid = new Shader(gl, gl.FRAGMENT_SHADER, "envir_fs.essl");
   this.mapProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsMap);
   this.envirProgram = new TexturedProgram(gl,this.envirvsIdle,this.envirfsSolid);
 
@@ -26,7 +26,7 @@ let Scene = function(gl) {
   this.envirMaterial.probeTexture.set(this.envirTexture.glTexture);
   this.envirMesh = new Mesh(this.TexturedQuadGeometry,this.envirMaterial); 
   this.envirObject = new GameObject(this.envirMesh);
-    this.envirObject.orientation = 3.14/2;
+  this.envirObject.orientation = 3.14/2;
   this.envirObject.rotateAxis.set(1, 0, 0);
 
 
@@ -177,7 +177,8 @@ let Scene = function(gl) {
   //powerDensity for point light (10, 100, 1000,1), if white surface with this source, would be mostly blue, things that are close to it will be green, things really close will be white
   
   this.camera = new PerspectiveCamera();
-  this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, 1.0);
+  //this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, 1.0);
+  this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
   this.rotation = 0;
 };
 
