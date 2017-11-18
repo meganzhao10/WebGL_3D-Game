@@ -10,19 +10,48 @@ let Scene = function(gl) {
   this.uvMarbleProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsMarble);
   this.uvWoodProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsWood);
 
-  this.gameObjects = [];
+  this.texturefsMap = new Shader(gl, gl.FRAGMENT_SHADER, "envirMap_fs.essl");
+  this.envirvsIdle = new Shader(gl, gl.VERTEX_SHADER, "envir_idle_vs.essl");
+  this.envirfsSolid = new Shader(gl, gl.FRAGMENT_SHADER, "rayCasting_fs.essl");
+  this.mapProgram = new TexturedProgram(gl,this.texturevsIdle,this.texturefsMap);
+  this.envirProgram = new TexturedProgram(gl,this.envirvsIdle,this.envirfsSolid);
 
+  this.gameObjects = [];
   this.shadowMaterial = new Material(gl, this.shadowProgram);
 
-  //ground object
+  //envir
   this.TexturedQuadGeometry = new TexturedQuadGeometry(gl);
+  this.envirMaterial = new Material(gl, this.envirProgram);
+  this.envirTexture = new Texture2D(gl, 'envmaps/milkyway.jpg');
+  this.envirMaterial.probeTexture.set(this.envirTexture.glTexture);
+  this.envirMesh = new Mesh(this.TexturedQuadGeometry,this.envirMaterial); 
+  this.envirObject = new GameObject(this.envirMesh);
+    this.envirObject.orientation = 3.14/2;
+  this.envirObject.rotateAxis.set(1, 0, 0);
+
+
+  //ground object
+  this.InfiniteGroundQuadGeometry = new InfiniteGroundQuadGeometry(gl);
   this.quadMaterial = new Material(gl, this.textureProgram);
   this.quadTexture = new Texture2D(gl, 'json/ground.png');
   this.quadMaterial.colorTexture.set(this.quadTexture.glTexture);
-  this.quadMesh = new Mesh(this.TexturedQuadGeometry,this.quadMaterial); 
+  this.quadMesh = new Mesh(this.InfiniteGroundQuadGeometry,this.quadMaterial); 
   this.quadObject = new GameObject(this.quadMesh);
   this.quadObject.ground = true;
   this.gameObjects.push(this.quadObject);
+
+
+
+  //envirMapObject
+  this.mapMaterial = new Material(gl,this.mapProgram);
+   this.mapTexture = new Texture2D(gl, 'envmaps/probe2017fall1.png');
+   this.mapMaterial.probeTexture.set(this.mapTexture.glTexture);
+  this.mapMesh = new MultiMesh(gl,"json/Slowpoke.json",[this.mapMaterial, this.mapMaterial]);
+   this.mapObject = new GameObject(this.mapMesh);
+  this.mapObject.position.set(0,0,0);
+
+
+
 
   //balloon
   this.balloonMaterial = new Material(gl,this.textureProgram);
@@ -143,12 +172,12 @@ let Scene = function(gl) {
   this.lightSource.lightPowerDensity = new Vec4Array(2);
   this.lightSource.lightPowerDensity.at(0).set(0.9,0.9,0.9,1); 
   this.lightSource.lightPowerDensity.at(1).set(5,5,5,1);
-  this.lightSource.mainDir = new Vec4();
+  this.lightSource.mainDir = new Vec4(); 
   //powerDensity for directional light between 0 and 1
   //powerDensity for point light (10, 100, 1000,1), if white surface with this source, would be mostly blue, things that are close to it will be green, things really close will be white
   
   this.camera = new PerspectiveCamera();
-  this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, this.carObject.position.z+0.7);
+  this.camera.position.set(this.carObject.position.x,this.carObject.position.y+0.1, 1.0);
   this.rotation = 0;
 };
 
@@ -245,6 +274,11 @@ Scene.prototype.update = function(gl, keysPressed) {
         this.gameObjects[i].drawShadow(this.camera, this.shadowMaterial, this.lightSource.lightPos.at(0));
       }
   }
+
+      this.mapObject.scale.set(0.03,0.03,0.03);
+      this.mapObject.draw(this.camera, this.lightSource);
+      this.envirObject.draw(this.camera, this.lightSource);
+
 
 }
 

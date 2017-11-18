@@ -28,6 +28,9 @@ Object.defineProperty(Material,
 Material.lightPos = new Vec4Array();
 Material.lightPowerDensity = new Vec4Array();
 Material.mainDir = new Vec4Array();
+Material.rayDirMatrix = new Mat4();
+
+
 
 
 Material.prototype.commit = function() { 

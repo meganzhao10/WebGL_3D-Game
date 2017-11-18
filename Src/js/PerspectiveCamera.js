@@ -19,7 +19,8 @@ var PerspectiveCamera = function()
   
   this.viewMatrix = new Mat4(); 
   this.projMatrix = new Mat4();
-  this.viewProjMatrix = new Mat4();  
+  this.viewProjMatrix = new Mat4(); 
+  this.rayDirMatrix = new Mat4(); 
   this.updateViewMatrix();
   this.updateProjMatrix(); 
 }; 
@@ -42,8 +43,14 @@ PerspectiveCamera.prototype.updateViewMatrix = function(){
     0  , 0  , 0   , 1).translate(this.position).invert();
   
   this.viewProjMatrix.set(this.viewMatrix).mul(this.projMatrix); 
+  this.updateRayDirMatrix;
    
 }; 
+
+PerspectiveCamera.prototype.updateRayDirMatrix = function(){ 
+  this.rayDirMatrix.set().translate(this.position)
+    .mul(this.viewMatrix).mul(this.projMatrix).invert();
+};
 
 PerspectiveCamera.prototype.updateProjMatrix = function(){ 
   var yScale = 1.0 / Math.tan(this.fov * 0.5); 
@@ -57,6 +64,7 @@ PerspectiveCamera.prototype.updateProjMatrix = function(){
         0    ,    0    ,  2*n*f/(n-f) ,   0); 
   this.viewProjMatrix.set(this.viewMatrix).
                       mul(this.projMatrix); 
+                      this.updateRayDirMatrix();
 }; 
 
 PerspectiveCamera.prototype.move = function(dt, keysPressed) { 
@@ -102,6 +110,7 @@ PerspectiveCamera.prototype.move = function(dt, keysPressed) {
 
 
   this.updateViewMatrix(); 
+  this.updateRayDirMatrix();
 }; 
 
 PerspectiveCamera.prototype.mouseDown = function() { 

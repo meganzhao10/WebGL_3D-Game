@@ -58,6 +58,7 @@ GameObject.prototype.draw = function(camera,lightSource){
   Material.lightPowerDensity = lightSource.lightPowerDensity;
   Material.mainDir = lightSource.mainDir;
   Material.lightPos = lightSource.lightPos;
+  Material.rayDirMatrix = camera.rayDirMatrix;
   this.mesh.draw(); 
 };
 
