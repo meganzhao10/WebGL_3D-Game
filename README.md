@@ -11,6 +11,12 @@ $ --allow_file_access_from_files
 # Mac OS X terminal
 $ open /Applications/Google\ Chrome.app --args --allow-file-access-from-files
 ```
+
+## Demo
+![Alt text](img-demo/slowpoke.png?raw=true "slowpoke")
+![Alt text](img-demo/world.png?raw=true "world")
+
+
 ## Key and Mouse Control
  IJKL - MARBLE OBJECT SLOWPOKE       
  WASD - camera      
