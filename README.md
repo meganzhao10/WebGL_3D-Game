@@ -3,14 +3,25 @@ Computer Graphics project - write an interactive 3D demo with OpenGL.
 
 
 ## Prerequisite
-To allow file access
-```
+# Clone this repository
+$ git clone https://github.com/meganzhao/WebGL_3D-Game.git
+
+# Go into the repository
+$ cd WebGL_3D-Game
+
+# Go into the source folder
+$ cd Src
+
+# Open the URL of the game
+$ open index.html
+
+# The page may not load because Chrome doesn't allow file access. Close Chrome, then start Chrome with the following command lines
+
 # Windows - must start Chrome with command line switch
 $ --allow_file_access_from_files
 
 # Mac OS X terminal
 $ open /Applications/Google\ Chrome.app --args --allow-file-access-from-files
-```
 
 ## Demo
 ![Alt text](img-demo/slowpoke.png?raw=true "slowpoke")
