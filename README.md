@@ -3,6 +3,7 @@ Computer Graphics project - write an interactive 3D demo with OpenGL.
 
 
 ## Prerequisite
+```
 # Clone this repository
 $ git clone https://github.com/meganzhao/WebGL_3D-Game.git
 
@@ -22,6 +23,7 @@ $ --allow_file_access_from_files
 
 # Mac OS X terminal
 $ open /Applications/Google\ Chrome.app --args --allow-file-access-from-files
+```
 
 ## Demo
 ![Alt text](img-demo/slowpoke.png?raw=true "slowpoke")
